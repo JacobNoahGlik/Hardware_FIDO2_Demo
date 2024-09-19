@@ -1,4 +1,5 @@
-from util import YubiKey, is_signed, RelyingParty
+# from util import YubiKey, is_signed, RelyingParty
+from util import UserInterface, RunContext
 import os
 
 def main():
@@ -10,13 +11,15 @@ def main():
     #     print('Signature verified')
     # else:
     #     print('Signature not verified')
-    Microsoft = RelyingParty('login.microsoft.com')
-    Microsoft.add_account('Jacob')
-    print(Microsoft.auth_user('Jacob', 'password'))
-    Microsoft.add_account('Mark')
-    Microsoft.add_account('Daniel')
-    Microsoft.add_account('Anna', account_password='password123456')
-    Microsoft.display_table()
+    # Microsoft = RelyingParty('login.microsoft.com')
+    # Microsoft.add_account('Jacob')
+    # print(Microsoft.auth_user('Jacob', 'password'))
+    # Microsoft.add_account('Mark')
+    # Microsoft.add_account('Daniel')
+    # Microsoft.add_account('Anna', account_password='password123456')
+    # Microsoft.display_table()
+    UserInterface(RunContext.AUTO_DETECT)
+
 
 if __name__ == "__main__":
     main()
