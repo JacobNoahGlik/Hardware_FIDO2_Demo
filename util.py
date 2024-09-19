@@ -16,6 +16,7 @@ class YubiKey:
         if not secret:
             secret = YubiKey._gen_secret(print_fun=True)
         self._device_secret: bytes = secret
+        self.ID: str = get_rand_id(12)
     
     def register_account(self, RP_ID, account):
         pass
@@ -129,6 +130,9 @@ class RelyingParty:
         self._longest_account_length = len('Username')  # used for displaying in table
         self.tokens = {}
 
+    def number_of_accounts(self):
+        return len(self.accounts)
+
     def _add_token(self, account, token):
         if account not in self.tokens.keys():
             raise ValueError(f"Account '{account}' does not exist.")
@@ -201,12 +205,13 @@ class RelyingParty:
         if username not in self.accounts.keys():
             return False
         return self.accounts[username].password_hash == hash(password)
-    def grant_session_token_1FA(self, username: str, password: str) -> bytes:
+    def grant_session_token_1FA(self, username: str, password: str) -> bytes | None:
         if self.valid_login(username, password):
             # grant user token for 1FA
             # it will time out in 3 minutes (0.05 hours) unless user authenticates with 2FA
             # post-2FA: new token will be granted to user (1 hour exp) assuming this token is still valid
             return self._generate_token(username, 0.05, '1FA')
+        return None # failed varification (username/password wrong)
     def request_challenge(self, username: str, token: bytes) -> Challenge:
         TK = self.get_token(username, '1FA', token)
         if not TK:
@@ -219,6 +224,10 @@ class RelyingParty:
             TK.add_nonce(nonce),
             nonce
         )
+    def requires_2FA(self, username: str) -> bool:
+        if username not in self.accounts:
+            raise ValueError(f'User "{username}" not found')
+        return not not self.accounts[username].public_key
 
     
 
@@ -226,7 +235,7 @@ class RelyingParty:
 
 
 
-def get_rand_id(length: int):
+def get_rand_id(length: int) -> str:
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
     
 def hash(input:str)->bytes:
