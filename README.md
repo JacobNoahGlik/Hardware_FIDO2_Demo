@@ -1,2 +1,2 @@
 # Hardware_FIDO2_Demo
-Hardware FIDO2 Demo in python
+[Moved to phishing MQP team repo](https://github.com/MFA-Phishing-MQP-WPI/Hardware-FIDO2-Implementation-Demo)
